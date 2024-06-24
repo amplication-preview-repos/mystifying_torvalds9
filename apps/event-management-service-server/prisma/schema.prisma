@@ -1,0 +1,78 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Sponsor {
+  company   String?
+  createdAt DateTime @default(now())
+  email     String?
+  event     Event?   @relation(fields: [eventId], references: [id])
+  eventId   String?
+  id        String   @id @default(cuid())
+  name      String?
+  phone     String?
+  updatedAt DateTime @updatedAt
+}
+
+model Exhibitor {
+  booth     Booth?   @relation(name: "BoothOnExhibitors", fields: [boothId], references: [id])
+  boothId   String?
+  booths    Booth[]  @relation(name: "BoothsOnExhibitor")
+  company   String?
+  createdAt DateTime @default(now())
+  email     String?
+  id        String   @id @default(cuid())
+  name      String?
+  phone     String?
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  booths      Booth[]
+  createdAt   DateTime  @default(now())
+  date        DateTime?
+  description String?
+  id          String    @id @default(cuid())
+  sponsors    Sponsor[]
+  title       String?
+  updatedAt   DateTime  @updatedAt
+}
+
+model Booth {
+  createdAt   DateTime    @default(now())
+  description String?
+  event       Event?      @relation(fields: [eventId], references: [id])
+  eventId     String?
+  exhibitor   Exhibitor?  @relation(name: "BoothsOnExhibitor", fields: [exhibitorId], references: [id])
+  exhibitorId String?
+  exhibitors  Exhibitor[] @relation(name: "BoothOnExhibitors")
+  id          String      @id @default(cuid())
+  name        String?
+  updatedAt   DateTime    @updatedAt
+}
+
+model Attendee {
+  createdAt DateTime @default(now())
+  email     String?
+  id        String   @id @default(cuid())
+  name      String?
+  phone     String?
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
